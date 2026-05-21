@@ -1,0 +1,86 @@
+[
+  {
+    "update_id": 838794090,
+    "message": {
+      "message_id": 1090,
+      "from": {
+        "id": 579031897,
+        "is_bot": false,
+        "first_name": "Nikita",
+        "username": "Nikitos0055"
+      },
+      "chat": {
+        "id": -1003136275591,
+        "title": "CryptoHub",
+        "type": "supergroup"
+      },
+      "date": 1778940451,
+      "forward_origin": {
+        "type": "channel",
+        "chat": {
+          "id": -1001199360700,
+          "title": "Труха⚡️Україна",
+          "username": "truexanewsua",
+          "type": "channel"
+        },
+        "message_id": 137639,
+        "date": 1778937700
+      },
+      "media_group_id": "14231523613415258",
+      "caption": "Important update",
+      "caption_entities": [
+        {
+          "type": "bold",
+          "offset": 0,
+          "length": 9
+        }
+      ],
+      "video": {
+        "duration": 13,
+        "width": 720,
+        "height": 1280,
+        "file_name": "IMG_9605.MOV",
+        "mime_type": "video/quicktime",
+        "file_id": "video-file-id-1090",
+        "file_unique_id": "video-unique-id-1090",
+        "file_size": 4981803
+      }
+    }
+  },
+  {
+    "update_id": 838794091,
+    "message": {
+      "message_id": 1091,
+      "from": {
+        "id": 579031897,
+        "is_bot": false,
+        "first_name": "Nikita",
+        "username": "Nikitos0055"
+      },
+      "chat": {
+        "id": -1003136275591,
+        "title": "CryptoHub",
+        "type": "supergroup"
+      },
+      "date": 1778940452,
+      "media_group_id": "14231523613415258",
+      "photo": [
+        {
+          "file_id": "photo-small-id-1091",
+          "width": 90,
+          "height": 160
+        },
+        {
+          "file_id": "photo-medium-id-1091",
+          "width": 320,
+          "height": 568
+        },
+        {
+          "file_id": "photo-big-id-1091",
+          "width": 720,
+          "height": 1280
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "name": "telegram-media",
+  "version": "0.1.0",
+  "description": "Collect and normalize Telegram media groups for Node.js",
+  "type": "module",
+  "author": "Zavada Nikita",
+  "sideEffects": false,
+  "license": "MIT",
+  "keywords": [
+    "telegram",
+    "telegram-bot",
+    "telegram-bot-api",
+    "telegram-media-group",
+    "telegram-album",
+    "media-group",
+    "album",
+    "webhook",
+    "redis",
+    "nodejs",
+    "typescript"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "vitest run --config ./vitest.config.mjs --configLoader native",
+    "test:watch": "vitest --config ./vitest.config.mjs --configLoader native",
+    "typecheck": "tsc -p ./tsconfig.json --noEmit",
+    "check": "npm run typecheck && npm run test && npm run build",
+    "prepublishOnly": "npm run check"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.105",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  }
+}
