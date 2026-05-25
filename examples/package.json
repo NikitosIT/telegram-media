@@ -1,0 +1,22 @@
+{
+  "name": "telegram-media-examples",
+  "private": true,
+  "description": "Integration examples for telegram-media",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p ./tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/mongoose": "^11.0.0",
+    "bullmq": "^5.77.1",
+    "grammy": "^1.38.0",
+    "mongoose": "^8.0.0",
+    "telegraf": "^4.16.3",
+    "telegram-media": "file:.."
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.105",
+    "typescript": "^6.0.3"
+  }
+}
