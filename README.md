@@ -415,10 +415,9 @@ callback. In that case, the final behavior is controlled only by `errorMode`.
 application, such as `Update`, `Message`, `PhotoSize`, `Video`, `Document`, and
 other related Telegram objects.
 
-These types are based on the Telegram Bot API objects used by the library, but
-they are not intended to be a complete mirror of every Telegram type and field.
-They cover the parts that are most useful for media group collection and common
-bot integrations.
+These types follow the Telegram Bot API objects used by the library and cover
+the parts that are most useful for media group collection and common bot
+integrations.
 
 If you only need Telegram update and message typing in your bot code, you can
 import them directly from the library:
@@ -460,9 +459,43 @@ This is useful when your application enriches Telegram messages before passing
 them into the library and you want those additional fields to stay fully typed
 inside `onCollected`.
 
+If you move collected post processing outside of `onCollected`, the best way to
+keep typing in sync with your collector configuration is to infer the final
+post type from the configured collector instance.
+
+```ts
+import {
+  createTelegramMediaGroup,
+  type InferTelegramCollectorPost,
+} from "telegram-media";
+
+const mediaGroup = createTelegramMediaGroup({
+  onCollected(post) {
+    console.log(post);
+  },
+});
+
+type TelegramIngestionPost = InferTelegramCollectorPost<typeof mediaGroup>;
+```
+
+This is the recommended approach when you want to type:
+
+- database mappers
+- queue payload builders
+- worker input
+- application services that process collected Telegram posts
+
 ## More examples
 
-You can find more complete usage examples in the `examples/` directory.
+You can find more complete usage examples in the `examples/` directory:
+
+- `express/prisma-ingestion.ts`
+- `express/worker-pipeline.ts`
+- `express/bullmq-producer.ts`
+- `express/bullmq-worker.ts`
+- `nestjs/ingestion.service.ts`
+- `telegraf/bot.ts`
+- `grammy/bot.ts`
 
 ## Feedback and questions
 

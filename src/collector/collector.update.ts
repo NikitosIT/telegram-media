@@ -1,15 +1,12 @@
 import type { TelegramMediaGroupMessage } from "../types/public-types.js";
-import type { Update } from "../types/telegram-bot.types.js";
 
 export const UNSUPPORTED_UPDATE_ERROR_MESSAGE =
   "Unsupported Telegram update. Expected message, channel_post, edited_message, or edited_channel_post.";
 
 export type TelegramMediaGroupUpdate<
   TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
-> = Omit<
-  Update,
-  "message" | "channel_post" | "edited_message" | "edited_channel_post"
-> & {
+> = {
+  update_id: number;
   message?: TMessage;
   channel_post?: TMessage;
   edited_message?: TMessage;

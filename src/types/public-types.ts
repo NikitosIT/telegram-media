@@ -1,5 +1,16 @@
 import type { TelegramMediaGroupCollector } from "../collector/TelegramMediaGroupCollector.js";
-import type { Message } from "./telegram-bot.types.js";
+import type {
+  Animation,
+  Audio,
+  Chat,
+  Document,
+  LinkPreviewOptions,
+  Message,
+  MessageEntity,
+  PhotoSize,
+  Video,
+  Voice,
+} from "./telegram-bot.types.js";
 
 /**
  * Media item kinds that can be extracted from Telegram updates by the
@@ -22,11 +33,33 @@ export type SupportedTelegramMediaType =
 export type TelegramPhotoSizePreference = "small" | "medium" | "big" | "all";
 
 /**
- * Default Telegram message type exposed by the collector. It uses the local
- * Telegram Bot API Message model so consumers get the most common fields by
- * default, while still being able to extend it with custom metadata.
+ * Minimal message contract required by the collector. It intentionally keeps
+ * only the Telegram fields needed to group updates and normalize supported
+ * media, which makes it easier to interoperate with framework-specific types
+ * such as Telegraf or grammY messages.
  */
-export type TelegramMediaGroupMessage = Message;
+export type TelegramMediaGroupMessage = {
+  message_id: number;
+  chat: Pick<Chat, "id">;
+  media_group_id?: string;
+  text?: string;
+  entities?: MessageEntity[];
+  caption?: string;
+  caption_entities?: MessageEntity[];
+  link_preview_options?: LinkPreviewOptions;
+  photo?: PhotoSize[];
+  video?: Video;
+  document?: Document;
+  audio?: Audio;
+  voice?: Voice;
+  animation?: Animation;
+};
+
+/**
+ * Full local Telegram Bot API message model exported by the package for
+ * consumers who want the richer raw Telegram shape in their own code.
+ */
+export type TelegramBotMessage = Message;
 
 /**
  * Helper for consumers who want to enrich the collector message type with
