@@ -5,7 +5,10 @@ import type {
   MediaGroupStorageAppendParams,
   StoredTelegramMediaGroup,
 } from "../types/storage-contract.types.js";
-import type { TelegramMediaGroupMessage } from "../types/public-types.js";
+import type {
+  TelegramBotMessage,
+  TelegramMediaGroupMessage,
+} from "../types/public-types.js";
 import { APPEND_MESSAGE_TO_GROUP_SCRIPT } from "./redis-storage.scripts.js";
 import type {
   RedisCommandClient,
@@ -13,7 +16,7 @@ import type {
 } from "./redis-storage.types.js";
 
 export const createRedisMediaGroupStorage = <
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 >(
   client: RedisCommandClient,
   options: RedisMediaGroupStorageOptions = {},

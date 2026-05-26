@@ -1,5 +1,6 @@
 import type {
   TelegramMediaCollectorErrorContext,
+  TelegramBotMessage,
   TelegramMediaGroupMessage,
 } from "./public-types.js";
 
@@ -15,7 +16,7 @@ export type GroupKey = NonNullable<
  * for the remaining Telegram updates to arrive.
  */
 export type StoredTelegramMediaGroup<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 > = {
   groupKey: GroupKey;
   messages: TMessage[];
@@ -25,7 +26,7 @@ export type StoredTelegramMediaGroup<
 };
 
 export type MediaGroupStorageAppendParams<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 > = {
   groupKey: GroupKey;
   message: TMessage;
@@ -35,7 +36,7 @@ export type MediaGroupStorageAppendParams<
 };
 
 export type MediaGroupStorage<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 > = {
   get(groupKey: GroupKey): Promise<StoredTelegramMediaGroup<TMessage> | null>;
   appendMessage(

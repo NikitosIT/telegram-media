@@ -1,7 +1,16 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 
 import { createTelegramMediaGroup } from "../../src/index.js";
 import { createMemoryMediaGroupStorage } from "../../src/storage/memory-storage.js";
+import type { InferTelegramCollectorPost } from "../../src/types/public-types.js";
 import type { Message, Update } from "../../src/types/telegram-bot.types.js";
 
 const createMessage = (
@@ -308,5 +317,16 @@ describe("createTelegramMediaGroup", () => {
     ).toThrow(
       "Invalid timeoutMs in collector options. Expected a finite number greater than 0.",
     );
+  });
+
+  it("infers the full Message type when storage is provided without an explicit generic", () => {
+    const collector = createTelegramMediaGroup({
+      storage: createMemoryMediaGroupStorage(),
+      onCollected: vi.fn(),
+    });
+
+    type TelegramIngestionPost = InferTelegramCollectorPost<typeof collector>;
+
+    expectTypeOf<TelegramIngestionPost["message"]>().toEqualTypeOf<Message>();
   });
 });

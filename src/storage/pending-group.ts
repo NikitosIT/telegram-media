@@ -2,10 +2,13 @@ import type {
   GroupKey,
   StoredTelegramMediaGroup,
 } from "../types/storage-contract.types.js";
-import type { TelegramMediaGroupMessage } from "../types/public-types.js";
+import type {
+  TelegramBotMessage,
+  TelegramMediaGroupMessage,
+} from "../types/public-types.js";
 
 type MergePendingGroupParams<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 > = {
   groupKey: GroupKey;
   message: TMessage;
@@ -15,7 +18,7 @@ type MergePendingGroupParams<
 };
 
 export const mergePendingGroup = <
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 >(
   params: MergePendingGroupParams<TMessage>,
 ): StoredTelegramMediaGroup<TMessage> => {
