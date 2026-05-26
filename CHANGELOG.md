@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.3 - 2026-05-26
+
+- restored `README.md` and `LICENSE` in the published npm package contents
+
 ## 0.2.2 - 2026-05-26
 
 - fixed `post.message` typing so the default collector output keeps the full raw Telegram `Message`
