@@ -12,10 +12,10 @@ import type {
   StoredTelegramMediaGroup,
 } from "../types/storage-contract.types.js";
 import { withDefined } from "../helpers/defined-props.js";
+import { assertValidTimeoutMs } from "../helpers/timeout.js";
 import { createCollectorErrorHandlers } from "./collector.errors.js";
 import { buildCollectedPost } from "./collector.media.js";
 import type {
-  TelegramMediaCollectCallOptions,
   TelegramMediaCollectorCoreOptions,
   TimerHandle,
 } from "./collector.types.js";
@@ -38,6 +38,8 @@ export const createTelegramMediaGroupCollector = <
   errorMode = DEFAULT_ERROR_MODE,
   onError,
 }: TelegramMediaCollectorCoreOptions<TMessage, TMediaFields>) => {
+  assertValidTimeoutMs(timeoutMs, "collector options");
+
   const timers = new Map<string, TimerHandle>();
   const { handlePublicError, handleBackgroundError } =
     createCollectorErrorHandlers({
@@ -128,10 +130,7 @@ export const createTelegramMediaGroupCollector = <
   };
 
   return {
-    async collect(
-      message: TMessage,
-      options: TelegramMediaCollectCallOptions = {},
-    ): Promise<void> {
+    async collect(message: TMessage): Promise<void> {
       try {
         if (message.media_group_id === undefined) {
           await onCollected(buildPost([message]));
@@ -144,9 +143,6 @@ export const createTelegramMediaGroupCollector = <
           message,
           now: Date.now(),
           defaultTimeoutMs: timeoutMs,
-          ...withDefined(options.timeoutMs, (definedTimeoutMs) => ({
-            timeoutMs: definedTimeoutMs,
-          })),
           ttlGraceMs: STORAGE_TTL_GRACE_MS,
         });
         scheduleAutoFlush(nextGroup);

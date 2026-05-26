@@ -1,6 +1,7 @@
 import type {
   TelegramCollectedMediaItems,
   SupportedTelegramMediaType,
+  TelegramBotMessage,
   TelegramCollectedPost,
   TelegramMediaCollectorErrorContext,
   TelegramMediaCollectorErrorMode,
@@ -16,7 +17,7 @@ import type {
 export type TimerHandle = ReturnType<typeof setTimeout>;
 
 export type TelegramMediaCollectorOptions<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
   TMediaFields extends TelegramMediaFieldsConfig | undefined = undefined,
 > = {
   onCollected: (
@@ -35,14 +36,10 @@ export type TelegramMediaCollectorOptions<
 };
 
 export type TelegramMediaCollectorCoreOptions<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
   TMediaFields extends TelegramMediaFieldsConfig | undefined = undefined,
 > = Omit<TelegramMediaCollectorOptions<TMessage, TMediaFields>, "storage"> & {
   storage: MediaGroupStorage<TMessage>;
-};
-
-export type TelegramMediaCollectCallOptions = {
-  timeoutMs?: number;
 };
 
 export type TelegramCollectedMediaOutputItem<
@@ -50,13 +47,10 @@ export type TelegramCollectedMediaOutputItem<
 > = TelegramCollectedMediaItems<TMediaFields>[number];
 
 export type TelegramMediaGroupCollectorType<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
   _TMediaFields extends TelegramMediaFieldsConfig | undefined = undefined,
 > = {
-  collect(
-    message: TMessage,
-    options?: TelegramMediaCollectCallOptions,
-  ): Promise<void>;
+  collect(message: TMessage): Promise<void>;
   flush(
     telegramChatId: GroupKey["chatId"],
     mediaGroupId: string,

@@ -55,7 +55,6 @@ export const createRedisMediaGroupStorage = <
           JSON.stringify(params.groupKey),
           String(params.now),
           String(params.defaultTimeoutMs),
-          params.timeoutMs === undefined ? "" : String(params.timeoutMs),
           String(params.ttlGraceMs),
         ],
       });

@@ -1,9 +1,9 @@
 import { QueueEvents, Worker, type Job } from "bullmq";
 
-import { bullmqConnection, telegramPostQueueName } from "./shared.js";
+import { bullmqConnection, TELEGRAM_POST_QUEUE_NAME } from "./shared.js";
 import type { TelegramPostJobPayload } from "./queue.js";
 
-const queueEvents = new QueueEvents(telegramPostQueueName, {
+const queueEvents = new QueueEvents(TELEGRAM_POST_QUEUE_NAME, {
   connection: bullmqConnection,
 });
 
@@ -31,7 +31,7 @@ const processTelegramPost = async (payload: TelegramPostJobPayload) => {
 };
 
 export const telegramPostWorker = new Worker<TelegramPostJobPayload>(
-  telegramPostQueueName,
+  TELEGRAM_POST_QUEUE_NAME,
   async (job: Job<TelegramPostJobPayload>) => {
     await processTelegramPost(job.data);
   },

@@ -6,8 +6,7 @@ local messageId = tonumber(ARGV[2])
 local groupKeyJson = ARGV[3]
 local now = tonumber(ARGV[4])
 local defaultTimeoutMs = tonumber(ARGV[5])
-local timeoutOverrideRaw = ARGV[6]
-local ttlGraceMs = tonumber(ARGV[7])
+local ttlGraceMs = tonumber(ARGV[6])
 
 local raw = redis.call("GET", key)
 local group
@@ -24,32 +23,27 @@ else
   }
 end
 
-local resolvedTimeoutMs
-if timeoutOverrideRaw ~= "" then
-  resolvedTimeoutMs = tonumber(timeoutOverrideRaw)
-else
-  resolvedTimeoutMs = tonumber(group.timeoutMs) or defaultTimeoutMs
-end
+local resolvedTimeoutMs = tonumber(group.timeoutMs) or defaultTimeoutMs
 
-local duplicate = false
+local existingIndex = nil
 for index = 1, #group.messages do
   if tonumber(group.messages[index].message_id) == messageId then
-    duplicate = true
+    existingIndex = index
     break
   end
 end
 
-if not duplicate then
+if existingIndex == nil then
   table.insert(group.messages, cjson.decode(messageJson))
-
-  table.sort(group.messages, function(left, right)
-    return tonumber(left.message_id) < tonumber(right.message_id)
-  end)
+else
+  group.messages[existingIndex] = cjson.decode(messageJson)
 end
 
-if not duplicate then
-  group.updatedAt = now
-end
+table.sort(group.messages, function(left, right)
+  return tonumber(left.message_id) < tonumber(right.message_id)
+end)
+
+group.updatedAt = now
 group.timeoutMs = resolvedTimeoutMs
 
 redis.call(

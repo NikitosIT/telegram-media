@@ -298,4 +298,15 @@ describe("createTelegramMediaGroup", () => {
       messageId: 10,
     });
   });
+
+  it("throws for an invalid facade timeout", () => {
+    expect(() =>
+      createTelegramMediaGroup({
+        onCollected: vi.fn(),
+        timeoutMs: Number.POSITIVE_INFINITY,
+      }),
+    ).toThrow(
+      "Invalid timeoutMs in collector options. Expected a finite number greater than 0.",
+    );
+  });
 });

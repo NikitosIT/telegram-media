@@ -86,7 +86,6 @@ describe("createRedisMediaGroupStorage", () => {
       message,
       now: 5_000,
       defaultTimeoutMs: 1_500,
-      timeoutMs: 2_000,
       ttlGraceMs: 5_000,
     });
 
@@ -99,36 +98,6 @@ describe("createRedisMediaGroupStorage", () => {
         JSON.stringify(GROUP_KEY),
         "5000",
         "1500",
-        "2000",
-        "5000",
-      ],
-    });
-  });
-
-  it("passes an empty timeout override marker when timeoutMs is omitted", async () => {
-    const { client, evalMock } = createRedisClient();
-    const message = createMessage(11);
-    const group = createStoredGroup(message);
-    evalMock.mockResolvedValue(JSON.stringify(group));
-    const storage = createRedisMediaGroupStorage<Message>(client);
-
-    await storage.appendMessage({
-      groupKey: GROUP_KEY,
-      message,
-      now: 6_000,
-      defaultTimeoutMs: 1_500,
-      ttlGraceMs: 5_000,
-    });
-
-    expect(evalMock).toHaveBeenCalledWith(APPEND_MESSAGE_TO_GROUP_SCRIPT, {
-      keys: ["telegram:media-group:-100123:group-1"],
-      arguments: [
-        JSON.stringify(message),
-        "11",
-        JSON.stringify(GROUP_KEY),
-        "6000",
-        "1500",
-        "",
         "5000",
       ],
     });
@@ -166,15 +135,19 @@ describe("createRedisMediaGroupStorage", () => {
 describe("APPEND_MESSAGE_TO_GROUP_SCRIPT", () => {
   it("contains the core atomic append steps", () => {
     expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain('redis.call("GET", key)');
-    expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain("local duplicate = false");
+    expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain("local existingIndex = nil");
     expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain(
       "table.insert(group.messages, cjson.decode(messageJson))",
     );
     expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain(
-      "group.messages[index].message_id",
+      "group.messages[existingIndex] = cjson.decode(messageJson)",
     );
     expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain(
-      "table.sort(group.messages, function(left, right)",
+      "group.messages[index].message_id",
+    );
+    expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain("table.sort(group.messages, function(left, right)");
+    expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain(
+      "tonumber(group.timeoutMs) or defaultTimeoutMs",
     );
     expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain('"SET"');
     expect(APPEND_MESSAGE_TO_GROUP_SCRIPT).toContain('"PX"');

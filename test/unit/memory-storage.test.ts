@@ -10,7 +10,10 @@ const GROUP_KEY: GroupKey = {
   mediaGroupId: "group-1",
 };
 
-const createMessage = (messageId: number): Message => ({
+const createMessage = (
+  messageId: number,
+  overrides: Partial<Message> = {},
+): Message => ({
   message_id: messageId,
   chat: {
     id: -100123,
@@ -18,6 +21,7 @@ const createMessage = (messageId: number): Message => ({
     title: "CryptoHub",
   },
   media_group_id: "group-1",
+  ...overrides,
 });
 
 describe("mergePendingGroup", () => {
@@ -68,8 +72,13 @@ describe("mergePendingGroup", () => {
     expect(nextGroup.updatedAt).toBe(2_000);
   });
 
-  it("ignores duplicate messages and keeps the last unique update timestamp", () => {
-    const message = createMessage(10);
+  it("replaces an existing message with the latest version for the same message_id", () => {
+    const message = createMessage(10, {
+      caption: "old caption",
+    });
+    const editedMessage = createMessage(10, {
+      caption: "new caption",
+    });
 
     const existingGroup = mergePendingGroup({
       groupKey: GROUP_KEY,
@@ -81,14 +90,15 @@ describe("mergePendingGroup", () => {
 
     const nextGroup = mergePendingGroup({
       groupKey: GROUP_KEY,
-      message,
+      message: editedMessage,
       existingGroup,
       resolvedTimeoutMs: 5_000,
       now: 2_000,
     });
 
     expect(nextGroup.messages).toHaveLength(1);
-    expect(nextGroup.updatedAt).toBe(1_000);
+    expect(nextGroup.messages[0]).toEqual(editedMessage);
+    expect(nextGroup.updatedAt).toBe(2_000);
     expect(nextGroup.timeoutMs).toBe(5_000);
   });
 });
@@ -119,39 +129,14 @@ describe("createMemoryMediaGroupStorage", () => {
     await expect(storage.get(GROUP_KEY)).resolves.toEqual(group);
   });
 
-  it("prefers explicit timeoutMs over existing and default timeout", async () => {
+  it("reuses existing group timeout for subsequent messages", async () => {
     const storage = createMemoryMediaGroupStorage<Message>();
 
     await storage.appendMessage({
       groupKey: GROUP_KEY,
       message: createMessage(1),
       now: Date.now(),
-      defaultTimeoutMs: 1500,
-      timeoutMs: 3_000,
-      ttlGraceMs: 5000,
-    });
-
-    const nextGroup = await storage.appendMessage({
-      groupKey: GROUP_KEY,
-      message: createMessage(2),
-      now: Date.now() + 100,
-      defaultTimeoutMs: 1500,
-      timeoutMs: 8_000,
-      ttlGraceMs: 5000,
-    });
-
-    expect(nextGroup.timeoutMs).toBe(8_000);
-  });
-
-  it("reuses existing group timeout when no override is passed", async () => {
-    const storage = createMemoryMediaGroupStorage<Message>();
-
-    await storage.appendMessage({
-      groupKey: GROUP_KEY,
-      message: createMessage(1),
-      now: Date.now(),
-      defaultTimeoutMs: 1500,
-      timeoutMs: 3_000,
+      defaultTimeoutMs: 3_000,
       ttlGraceMs: 5000,
     });
 
@@ -200,5 +185,33 @@ describe("createMemoryMediaGroupStorage", () => {
     await storage.delete(GROUP_KEY);
 
     await expect(storage.get(GROUP_KEY)).resolves.toBeNull();
+  });
+
+  it("stores the latest message version when the same message_id is appended again", async () => {
+    const storage = createMemoryMediaGroupStorage<Message>();
+
+    await storage.appendMessage({
+      groupKey: GROUP_KEY,
+      message: createMessage(1, {
+        caption: "old caption",
+      }),
+      now: Date.now(),
+      defaultTimeoutMs: 1500,
+      ttlGraceMs: 5000,
+    });
+
+    const group = await storage.appendMessage({
+      groupKey: GROUP_KEY,
+      message: createMessage(1, {
+        caption: "new caption",
+      }),
+      now: Date.now() + 100,
+      defaultTimeoutMs: 1500,
+      ttlGraceMs: 5000,
+    });
+
+    expect(group.messages).toHaveLength(1);
+    expect(group.messages[0]?.caption).toBe("new caption");
+    expect(group.updatedAt).toBe(Date.now() + 100);
   });
 });
