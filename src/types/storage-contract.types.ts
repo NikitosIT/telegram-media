@@ -31,7 +31,6 @@ export type MediaGroupStorageAppendParams<
   message: TMessage;
   now: number;
   defaultTimeoutMs: number;
-  timeoutMs?: number;
   ttlGraceMs: number;
 };
 

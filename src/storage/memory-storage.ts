@@ -82,7 +82,7 @@ export const createMemoryMediaGroupStorage = <
     appendMessage(params: MediaGroupStorageAppendParams<TMessage>) {
       const existingGroup = getValidEntry(params.groupKey)?.group ?? null;
       const resolvedTimeoutMs =
-        params.timeoutMs ?? existingGroup?.timeoutMs ?? params.defaultTimeoutMs;
+        existingGroup?.timeoutMs ?? params.defaultTimeoutMs;
 
       const nextGroup = mergePendingGroup({
         groupKey: params.groupKey,

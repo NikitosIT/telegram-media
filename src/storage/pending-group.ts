@@ -28,13 +28,18 @@ export const mergePendingGroup = <
       timeoutMs: params.resolvedTimeoutMs,
     };
 
-  const duplicate = nextGroup.messages.some(
+  const existingMessageIndex = nextGroup.messages.findIndex(
     (message) => message.message_id === params.message.message_id,
   );
 
-  if (!duplicate) {
+  if (existingMessageIndex === -1) {
     nextGroup.messages = [...nextGroup.messages, params.message].sort(
       (left, right) => left.message_id - right.message_id,
+    );
+    nextGroup.updatedAt = params.now;
+  } else {
+    nextGroup.messages = nextGroup.messages.map((message, index) =>
+      index === existingMessageIndex ? params.message : message,
     );
     nextGroup.updatedAt = params.now;
   }

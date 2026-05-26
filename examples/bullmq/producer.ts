@@ -4,7 +4,7 @@ import {
   type Update,
 } from "telegram-media";
 
-import { mediaFields } from "./shared.js";
+import { EXAMPLE_JOB_NAMES, mediaFields } from "./shared.js";
 import { telegramPostQueue } from "./queue.js";
 
 export type TelegramIngestionPost = InferTelegramCollectorPost<
@@ -13,7 +13,7 @@ export type TelegramIngestionPost = InferTelegramCollectorPost<
 
 const collector = createTelegramMediaGroup({
   async onCollected(post) {
-    await telegramPostQueue.add("process-telegram-post", {
+    await telegramPostQueue.add(EXAMPLE_JOB_NAMES.PROCESS_TELEGRAM_POST, {
       chatId: post.message.chat.id,
       messageId: post.message.message_id,
       mediaGroupId: post.message.media_group_id ?? null,

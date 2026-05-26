@@ -177,7 +177,7 @@ export type TelegramCollectedMediaOutput<
  * message or a fully assembled media group.
  */
 export type TelegramCollectedPost<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
   TMediaFields extends TelegramMediaFieldsConfig | undefined = undefined,
 > = {
   media: TelegramCollectedMediaOutput<TMediaFields>;

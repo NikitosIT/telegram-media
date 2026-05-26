@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 
-import { bullmqConnection, telegramPostQueueName } from "./shared.js";
+import { bullmqConnection, TELEGRAM_POST_QUEUE_NAME } from "./shared.js";
 import type { TelegramIngestionPost } from "./producer.js";
 
 export type TelegramPostJobPayload = {
@@ -13,7 +13,7 @@ export type TelegramPostJobPayload = {
 };
 
 export const telegramPostQueue = new Queue<TelegramPostJobPayload>(
-  telegramPostQueueName,
+  TELEGRAM_POST_QUEUE_NAME,
   {
     connection: bullmqConnection,
     defaultJobOptions: {

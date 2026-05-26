@@ -167,6 +167,75 @@ describe("createTelegramMediaGroupCollector", () => {
     expect(onCollected).toHaveBeenCalledTimes(1);
   });
 
+  it("emits the latest message version when the same message_id is edited before flush", async () => {
+    const storage = createMemoryMediaGroupStorage<Message>();
+    const onCollected = vi.fn<(post: TelegramCollectedPost<Message>) => void>();
+
+    const collector = createTelegramMediaGroupCollector<Message>({
+      storage,
+      onCollected,
+      timeoutMs: 5_000,
+    });
+
+    const originalMessage = createMessage(1, {
+      media_group_id: "group-1",
+      caption: "old caption",
+      photo: [
+        {
+          file_id: "photo-1",
+          width: 320,
+          height: 240,
+        },
+      ],
+    });
+    const editedMessage = createMessage(1, {
+      media_group_id: "group-1",
+      caption: "new caption",
+      photo: [
+        {
+          file_id: "photo-1",
+          width: 320,
+          height: 240,
+        },
+      ],
+    });
+    const secondMessage = createMessage(2, {
+      media_group_id: "group-1",
+      video: {
+        file_id: "video-2",
+        file_unique_id: "video-2-unique",
+        width: 1920,
+        height: 1080,
+        duration: 42,
+      },
+    });
+
+    await collector.collect(originalMessage);
+    await collector.collect(secondMessage);
+    await collector.collect(editedMessage);
+    await collector.flush(originalMessage.chat.id, "group-1");
+
+    expect(onCollected).toHaveBeenCalledTimes(1);
+    expect(onCollected).toHaveBeenCalledWith({
+      media: [
+        {
+          type: "photo",
+          fileId: "photo-1",
+          width: 320,
+          height: 240,
+        },
+        {
+          type: "video",
+          fileId: "video-2",
+          width: 1920,
+          height: 1080,
+          duration: 42,
+        },
+      ],
+      message: editedMessage,
+    });
+  });
+
   it("discards a pending group and prevents auto-flush emission", async () => {
     const storage = createMemoryMediaGroupStorage<Message>();
     const onCollected = vi.fn<(post: TelegramCollectedPost<Message>) => void>();
@@ -359,5 +428,17 @@ describe("createTelegramMediaGroupCollector", () => {
 
     expect(onCollected).toHaveBeenCalledTimes(1);
     expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("throws for an invalid collector timeout", () => {
+    expect(() =>
+      createTelegramMediaGroupCollector<Message>({
+        storage: createMemoryMediaGroupStorage<Message>(),
+        onCollected: vi.fn(),
+        timeoutMs: 0,
+      }),
+    ).toThrow(
+      "Invalid timeoutMs in collector options. Expected a finite number greater than 0.",
+    );
   });
 });

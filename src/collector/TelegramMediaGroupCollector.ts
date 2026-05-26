@@ -1,6 +1,7 @@
 import { createMemoryMediaGroupStorage } from "../storage/memory-storage.js";
 import type {
   TelegramMediaFieldsConfig,
+  TelegramBotMessage,
   TelegramMediaGroupMessage,
 } from "../types/public-types.js";
 import { withDefined } from "../helpers/defined-props.js";
@@ -21,7 +22,7 @@ import type {
  * `createTelegramMediaGroup` factory from the package root in application code.
  */
 export class TelegramMediaGroupCollector<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
   TMediaFields extends TelegramMediaFieldsConfig | undefined = undefined,
 > {
   private readonly collector: TelegramMediaGroupCollectorType<
@@ -97,7 +98,7 @@ export class TelegramMediaGroupCollector<
  * emits normalized collected posts through the configured callbacks.
  */
 export const createTelegramMediaGroup = <
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
   TMediaFields extends TelegramMediaFieldsConfig | undefined = undefined,
 >(
   options: TelegramMediaCollectorOptions<TMessage, TMediaFields>,
