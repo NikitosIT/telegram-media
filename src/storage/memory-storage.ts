@@ -4,12 +4,15 @@ import type {
   MediaGroupStorageAppendParams,
   StoredTelegramMediaGroup,
 } from "../types/storage-contract.types.js";
-import type { TelegramMediaGroupMessage } from "../types/public-types.js";
+import type {
+  TelegramBotMessage,
+  TelegramMediaGroupMessage,
+} from "../types/public-types.js";
 import { mergePendingGroup } from "./pending-group.js";
 import type { TimerHandle } from "../collector/collector.types.js";
 
 export type MemoryMediaGroupStorageEntry<
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 > = {
   expiresAt: number;
   group: StoredTelegramMediaGroup<TMessage>;
@@ -17,7 +20,7 @@ export type MemoryMediaGroupStorageEntry<
 };
 
 export const createMemoryMediaGroupStorage = <
-  TMessage extends TelegramMediaGroupMessage = TelegramMediaGroupMessage,
+  TMessage extends TelegramMediaGroupMessage = TelegramBotMessage,
 >() => {
   const store = new Map<string, MemoryMediaGroupStorageEntry<TMessage>>();
 
